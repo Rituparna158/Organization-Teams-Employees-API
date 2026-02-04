@@ -1,33 +1,14 @@
 import { Router } from "express";
+import organizationController from "../controllers/organization.controller";
+import { authenticate } from "../middlewares/auth.middlewares";
 
 const router=Router();
+router.use(authenticate)
 
-interface Organization{
-    id:number;
-    name:string;
-}
-const organizations:Organization[]=[];
-
-router.post("/",(req,res)=>{
-    const {name}=req.body;
-
-    const newOrg:Organization={
-        id:organizations.length+1,
-        name:name
-    };
-    organizations.push(newOrg);
-    res.json(newOrg);
-});
-
-router.get("/",(req,res)=>{
-    res.json(organizations);
-});
-router.get("/:id",(req,res)=>{
-    const id=Number(req.params.id);
-    const org=organizations.find(o=> o.id===id);
-    if(!org){
-        return res.status(404).json({message:"organisation not found"})
-    }
-    res.json(org)
-})
+router.post("/",organizationController.create);
+router.get("/",organizationController.getAll);
+router.get("/:id",organizationController.getById);
+router.put('/:id',organizationController.update);
+router.delete("/",organizationController.deleteAll);
+router.delete('/:id',organizationController.deleteById);
 export default router;
