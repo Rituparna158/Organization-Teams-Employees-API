@@ -7,8 +7,9 @@ const router=Router();
 router.use(authenticate)
 
 router.post("/",teamController.create)
-router.get("/",teamController.getAll)
 router.get("/:id",teamController.getById)
+router.get("/",teamController.getAll)
+
 router.get("/organization/:orgId",teamController.getOrganizationId);
 router.put("/:id",teamController.update);
 router.delete("/:id",teamController.deleteById);

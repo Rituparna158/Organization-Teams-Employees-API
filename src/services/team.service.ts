@@ -36,7 +36,7 @@ const teamService={
     },
     getById(id:number):Promise<Teams|null>{
         return new Promise((resolve,reject)=>{
-            const sql="SELECT * FROM organizations WHERE id=?"
+            const sql="SELECT * FROM teams WHERE id=?"
 
             db.get(sql,[id],(err,row)=>{
                 if(err){
@@ -49,7 +49,7 @@ const teamService={
     },
     getByOrganizationId(organizationId:number):Promise<Teams[]>{
         return new Promise((resolve,reject)=>{
-            const sql="SELECT * FROM organizations WHERE organizationId=?";
+            const sql="SELECT * FROM teams WHERE organizationId=?";
             db.all(sql,[organizationId],(err,row)=>{
                 if(err){
                     reject(err)

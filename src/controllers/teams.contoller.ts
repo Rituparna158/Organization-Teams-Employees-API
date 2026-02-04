@@ -15,8 +15,9 @@ const teamController={
         res.status(CONSTANTS.HTTP_STATUS.OK).json(team);
     },
     async getById(req:Request,res:Response){
-        const id=Number(req.params.orgId);
+        const id=Number(req.params.id);
         const result= await teamService.getById(id)
+        console.log("result:",result)
         if(!result){
             return res.status(CONSTANTS.HTTP_STATUS.NOT_FOUND)
             .json({message:CONSTANTS.TEAM_MESSAGES.NOT_FOUND})

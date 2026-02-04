@@ -2,7 +2,7 @@ import { Router } from "express";
 import authController from "../controllers/auth.controller";
 import { authenticate } from "../middlewares/auth.middlewares";
 const router=Router();
-router.use(authenticate)
+
 router.post("/register",authController.register);
 router.post("/login",authController.login)
 
