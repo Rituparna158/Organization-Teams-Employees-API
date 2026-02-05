@@ -1,33 +1,15 @@
 import { Router } from "express";
+import organizationController from "../controllers/organization.controller";
+import { authenticate } from "../middlewares/auth.middlewares";
+import { authorizePermissions } from "../middlewares/authorizePermissions";
 
 const router=Router();
+router.use(authenticate)
 
-interface Organization{
-    id:number;
-    name:string;
-}
-const organizations:Organization[]=[];
-
-router.post("/",(req,res)=>{
-    const {name}=req.body;
-
-    const newOrg:Organization={
-        id:organizations.length+1,
-        name:name
-    };
-    organizations.push(newOrg);
-    res.json(newOrg);
-});
-
-router.get("/",(req,res)=>{
-    res.json(organizations);
-});
-router.get("/:id",(req,res)=>{
-    const id=Number(req.params.id);
-    const org=organizations.find(o=> o.id===id);
-    if(!org){
-        return res.status(404).json({message:"organisation not found"})
-    }
-    res.json(org)
-})
+router.post("/",authorizePermissions(["organization:create"]),organizationController.create);
+router.get("/",authorizePermissions(["organization:read"]),organizationController.getAll);
+router.get("/:id",authorizePermissions(["organization:read"]),organizationController.getById);
+router.put('/:id',authorizePermissions(["organization:update"]),organizationController.update);
+router.delete("/",authorizePermissions(["organization:delete"]),organizationController.deleteAll);
+router.delete('/:id',authorizePermissions(["organization:delete"]),organizationController.deleteById);
 export default router;
