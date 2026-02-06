@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import organizationService from "../services/organization.service";
+import organizationService from "../services/organization";
 import CONSTANTS from "../utils/constants";
 
 //const organizations:Organization[]=[];

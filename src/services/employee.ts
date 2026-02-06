@@ -1,5 +1,5 @@
 import db from "../db/sqlite";
-import { Employee } from "../models/employee.model";
+import { Employee } from "../models/employee";
 
 const employeeeService = {
   create(

@@ -1,6 +1,6 @@
 import db from "../db/sqlite";
 import bcrypt from "bcryptjs";
-import { User } from "../models/user.model";
+import { User } from "../models/user";
 
 const userService = {
   async register(email: string, password: string): Promise<User> {

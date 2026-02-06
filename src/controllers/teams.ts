@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import teamService from "../services/team.service";
+import teamService from "../services/team";
 import CONSTANTS from "../utils/constants";
 
 //const teams:Teams[]=[];

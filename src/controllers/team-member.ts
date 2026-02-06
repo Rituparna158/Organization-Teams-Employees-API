@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import TeamMemberService from "../services/teamMember.service";
+import TeamMemberService from "../services/team-member";
 import CONSTANTS from "../utils/constants";
 const teamMemberController = {
   async create(req: Request, res: Response) {

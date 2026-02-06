@@ -1,6 +1,6 @@
 import { resolve } from "node:dns";
 import db from "../db/sqlite";
-import { Teams } from "../models/teams.model";
+import { Teams } from "../models/teams";
 
 const teamService = {
   create(name: string, organizationId: number): Promise<Teams> {

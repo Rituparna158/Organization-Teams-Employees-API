@@ -1,6 +1,6 @@
 import { resolve } from "node:dns";
 import db from "../db/sqlite";
-import { Organization } from "../models/organization.model";
+import { Organization } from "../models/organization";
 import { rejects } from "node:assert";
 
 const organizationService = {
