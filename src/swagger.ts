@@ -24,7 +24,7 @@ const options = {
   apis: ["./src/routers/*.ts"],
 };
 const swaggerSpec = swaggerJSDoc(options);
-export function setupSwagger(app: Express) {
+export function setSwagger(app: Express) {
   console.log("swagger loaded");
   app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 }

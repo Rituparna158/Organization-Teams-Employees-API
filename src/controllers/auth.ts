@@ -2,17 +2,16 @@ import { Request, Response } from "express";
 //import jwt from "jsonwebtoken";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import userService from "../services/user.service";
-import roleService from "../services/role.service";
-import permissionService from "../services/permission.service";
+import userService from "../services/user";
+import roleService from "../services/role";
+import permissionService from "../services/permission";
 import CONSTANTS from "../utils/constants";
 import { register } from "node:module";
 
-const JWT_CODE = process.env.JWT_CODE as string;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1h";
-console.log(JWT_CODE);
-console.log(JWT_EXPIRES_IN);
-if (!JWT_CODE || !JWT_EXPIRES_IN) {
+const jwtCode = process.env.jwt_code as string;
+const jwtExpiresIn = process.env.jwt_expires_in || "1h";
+
+if (!jwtCode || !jwtExpiresIn) {
   throw new Error("jwt env variable not load");
 }
 
@@ -49,7 +48,7 @@ const authController = {
         roles,
         permissions,
       },
-      JWT_CODE,
+      jwtCode,
       { expiresIn: "1h" },
     );
     res

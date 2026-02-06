@@ -1,6 +1,6 @@
 import { Router } from "express";
-import teamController from "../controllers/teams.contoller";
-import { authenticate } from "../middlewares/auth.middlewares";
+import teamController from "../controllers/teams";
+import { authenticate } from "../middlewares/auth";
 //import organizationController from "../controllers/organization.controller";
 
 const router = Router();

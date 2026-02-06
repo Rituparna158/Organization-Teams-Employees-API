@@ -1,7 +1,7 @@
 import { Router } from "express";
-import employeeController from "../controllers/employee.controller";
-import { authenticate } from "../middlewares/auth.middlewares";
-import { authorizePermissions } from "../middlewares/authorizePermissions";
+import employeeController from "../controllers/employee";
+import { authenticate } from "../middlewares/auth";
+import { authorizePermissions } from "../middlewares/authorize-permissions";
 
 const router = Router();
 

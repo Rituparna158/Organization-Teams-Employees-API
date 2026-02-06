@@ -1,17 +1,17 @@
 import express from "express";
-import authRoutes from "./routers/auth.router";
-import userRoutes from "./routers/user.router";
-import orgRoutes from "./routers/organizations.routers";
-import teamRoutes from "./routers/teams.routers";
-import empRoutes from "./routers/employee.router";
-import teamMemRoutes from "./routers/teamMember.router";
-import { setupSwagger } from "./swagger";
+import authRoutes from "./routers/auth";
+import userRoutes from "./routers/user";
+import orgRoutes from "./routers/organizations";
+import teamRoutes from "./routers/teams";
+import empRoutes from "./routers/employee";
+import teamMemRoutes from "./routers/team-member";
+import { setSwagger } from "./swagger";
 
 const app = express();
 console.log("app.ts loaded");
 app.use(express.json());
 console.log("app swagger ");
-setupSwagger(app);
+setSwagger(app);
 
 app.get("/", (req, res) => {
   res.send("API is running");
