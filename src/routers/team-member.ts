@@ -16,7 +16,7 @@ router.use(authenticate);
 
 /**
  * @swagger
- * /api/teams/{teamId}/members:
+ * /api/v1/teams/{teamId}/members:
  *   post:
  *     tags:
  *       - Team Members
@@ -54,7 +54,7 @@ router.post(
 
 /**
  * @swagger
- * /api/teams/{teamId}/members:
+ * /api/v1/teams/{teamId}/members:
  *   get:
  *     tags:
  *       - Team Members

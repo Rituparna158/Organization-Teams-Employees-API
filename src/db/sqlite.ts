@@ -1,14 +1,18 @@
 import sqlite3 from "sqlite3";
 import bcrypt from "bcryptjs";
- 
-const db = new sqlite3.Database(":memory:");
- 
+
+const db = new sqlite3.Database(":memory:", function (err) {
+  if (err) console.log(err);
+  db.run("PRAGMA foreign_keys=ON;");
+
+  db.get("PRAGMA foreign_keys;", (err, row) => {
+    console.log("foreign keys enabled?", row);
+  });
+});
+
 db.serialize(() => {
   console.log("Initializing database...");
- 
-  db.run(`PRAGMA foreign_keys = ON`);
- 
-  
+
   // USERS TABLE
 
   db.run(`
@@ -20,10 +24,9 @@ db.serialize(() => {
       createdAt TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
- 
-  
+
   // ORGANIZATIONS TABLE
-  
+
   db.run(`
     CREATE TABLE organizations (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,10 +38,9 @@ db.serialize(() => {
       updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
- 
 
   // TEAMS TABLE
- 
+
   db.run(`
     CREATE TABLE teams (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -52,7 +54,7 @@ db.serialize(() => {
   `);
 
   // EMPLOYEES TABLE
-  
+
   db.run(`
     CREATE TABLE employees (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,10 +71,9 @@ db.serialize(() => {
         ON DELETE CASCADE
     )
   `);
- 
- 
+
   // TEAM MEMBERS TABLE
-  
+
   db.run(`
     CREATE TABLE team_members (
       teamId INTEGER NOT NULL,
@@ -87,18 +88,16 @@ db.serialize(() => {
         ON DELETE CASCADE
     )
   `);
- 
 
   // ROLES TABLE
- 
+
   db.run(`
     CREATE TABLE roles (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE
     )
   `);
- 
-  
+
   // PERMISSIONS TABLE
 
   db.run(`
@@ -109,7 +108,7 @@ db.serialize(() => {
   `);
 
   // USER_ROLES TABLE
- 
+
   db.run(`
     CREATE TABLE user_roles (
       userId INTEGER NOT NULL,
@@ -123,8 +122,7 @@ db.serialize(() => {
         ON DELETE CASCADE
     )
   `);
- 
-  
+
   // ROLE_PERMISSIONS TABLE
 
   db.run(`
@@ -140,15 +138,14 @@ db.serialize(() => {
         ON DELETE CASCADE
     )
   `);
- 
-  
+
   // SEED ROLES
- 
+
   db.run(`
     INSERT INTO roles (name)
     VALUES ('admin'), ('user')
   `);
- 
+
   // SEED PERMISSIONS
 
   db.run(`
@@ -172,20 +169,18 @@ db.serialize(() => {
 
       ('user:assign-role')
   `);
- 
 
   // ADMIN ROLE GETS ALL PERMISSIONS
-  
+
   db.run(`
     INSERT INTO role_permissions (roleId, permissionId)
     SELECT r.id, p.id
     FROM roles r, permissions p
     WHERE r.name = 'admin'
   `);
- 
- 
+
   // USER ROLE GETS ONLY READ PERMISSIONS
- 
+
   db.run(`
     INSERT INTO role_permissions (roleId, permissionId)
     SELECT r.id, p.id
@@ -199,31 +194,40 @@ db.serialize(() => {
       )
   `);
 
-  const seedAdmin=async()=>{
-    const email="admin@test.com";
-    const password="admin123";
+  const seedAdmin = async () => {
+    const email = "admin@test.com";
+    const password = "admin123";
 
-    const hash=await bcrypt.hash(password,10);
+    const hash = await bcrypt.hash(password, 10);
     db.run(
       `INSERT INTO users (email,passwordhash) VALUES (?, ?)`,
-      [email,hash],
-      function(){
-        const adminId=this.lastID;
+      [email, hash],
+      function (err) {
+        if (err) {
+          console.error("Admin insert failed", err.message);
+          return;
+        }
+        const adminId = this.lastID;
         db.run(
           `INSERT INTO user_roles (userId,roleId)
           SELECT ?,id FROM roles WHERE name='admin'`,
-          [adminId]
+          [adminId],
+          function (err2) {
+            if (err2) {
+              console.error("Role assigned failed", err2.message);
+              return;
+            }
+          },
         );
         console.log("Default admin created");
-        console.log("email:",email);
-        console.log("password:",password);
-      }
-    )
+        console.log("email:", email);
+        console.log("password:", password);
+      },
+    );
   };
   seedAdmin();
- 
+
   console.log("Database initialized successfully with RBAC");
 });
- 
+
 export default db;
- 

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import teamController from "../controllers/teams";
 import { authenticate } from "../middlewares/auth";
+import { authorizePermissions } from "../middlewares/authorize-permissions";
 //import organizationController from "../controllers/organization.controller";
 
 const router = Router();
@@ -14,7 +15,7 @@ router.use(authenticate);
 
 /**
  * @swagger
- * /api/teams:
+ * /api/v1/teams:
  *   post:
  *     summary: Create a new team
  *     tags:
@@ -41,35 +42,11 @@ router.use(authenticate);
  *       201:
  *         description: Teams created successfully
  */
-router.post("/", teamController.create);
+router.post("/", authorizePermissions(["team:create"]), teamController.create);
 
 /**
  * @swagger
- * /api/teams/{id}:
- *   get:
- *     summary: Get team by ID
- *     tags:
- *       - Teams
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         example: 1
- *     responses:
- *       200:
- *         description: Team found
- *       404:
- *         description: Team not found
- */
-router.get("/:id", teamController.getById);
-
-/**
- * @swagger
- * /api/teams:
+ * /api/v1/teams:
  *   get:
  *     summary: Get all teams
  *     tags:
@@ -80,11 +57,11 @@ router.get("/:id", teamController.getById);
  *       200:
  *         description: List of Teams
  */
-router.get("/", teamController.getAll);
+router.get("/", authorizePermissions(["team:read"]), teamController.getAll);
 
 /**
  * @swagger
- * /api/teams/organization/{orgId}:
+ * /api/v1/teams/organization/{orgId}:
  *   get:
  *     summary: Get all team under an  organization
  *     tags:
@@ -104,11 +81,38 @@ router.get("/", teamController.getAll);
  *       404:
  *         description: Team not found
  */
-router.get("/organization/:orgId", teamController.getOrganizationId);
+router.get(
+  "/organization/:orgId",
+  authorizePermissions(["team:read"]),
+  teamController.getOrganizationId,
+);
+/**
+ * @swagger
+ * /api/v1/teams/{id}:
+ *   get:
+ *     summary: Get team by ID
+ *     tags:
+ *       - Teams
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Team found
+ *       404:
+ *         description: Team not found
+ */
+router.get("/:id", authorizePermissions(["team:read"]), teamController.getById);
 
 /**
  * @swagger
- * /api/teams/{id}:
+ * /api/v1/teams/{id}:
  *   put:
  *     summary: Update team by ID
  *     tags:
@@ -135,11 +139,15 @@ router.get("/organization/:orgId", teamController.getOrganizationId);
  *       200:
  *         description: Team Name updated successfully
  */
-router.put("/:id", teamController.update);
+router.put(
+  "/:id",
+  authorizePermissions(["team:update"]),
+  teamController.update,
+);
 
 /**
  * @swagger
- * /api/teams/{id}:
+ * /api/v1/teams/{id}:
  *   delete:
  *     summary: Delete Team by ID
  *     tags:
@@ -157,11 +165,15 @@ router.put("/:id", teamController.update);
  *       200:
  *         description: Team deleted successfully
  */
-router.delete("/:id", teamController.deleteById);
+router.delete(
+  "/:id",
+  authorizePermissions(["team:delete"]),
+  teamController.deleteById,
+);
 
 /**
  * @swagger
- * /api/teams:
+ * /api/v1/teams:
  *   delete:
  *     summary: Delete all Teams
  *     tags:
@@ -172,6 +184,10 @@ router.delete("/:id", teamController.deleteById);
  *       200:
  *         description: All teams deleted successfully
  */
-router.delete("/", teamController.deleteAll);
+router.delete(
+  "/",
+  authorizePermissions(["team:delete"]),
+  teamController.deleteAll,
+);
 
 export default router;

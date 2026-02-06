@@ -19,7 +19,7 @@ const organizationService = {
           db.get(
             `SELECT * FROM organizations WHERE id=?`,
             [this.lastID],
-            (err2, row) => {
+            function (err2, row) {
               if (err2) reject(err2);
               else resolve(row as Organization);
             },

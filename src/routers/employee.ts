@@ -61,7 +61,7 @@ router.post(
 
 /**
  * @swagger
- * /api/employees/{id}:
+ * /api/v1/employees/{id}:
  *   get:
  *     summary: Get employee by ID
  *     tags:
@@ -89,7 +89,7 @@ router.get(
 
 /**
  * @swagger
- * /api/employees:
+ * /api/v1/employees:
  *   get:
  *     summary: Get all Employees
  *     tags:
@@ -108,7 +108,7 @@ router.get(
 
 /**
  * @swagger
- * /api/employees/organization/{organizationId}:
+ * /api/v1/employees/organization/{organizationId}:
  *   get:
  *     summary: Get all employee under an organization
  *     tags:
@@ -134,7 +134,7 @@ router.get(
 
 /**
  * @swagger
- * /api/employees/{id}:
+ * /api/v1/employees/{id}:
  *   put:
  *     summary: Update employee detail
  *     tags:
@@ -176,7 +176,7 @@ router.put(
 
 /**
  * @swagger
- * /api/employees/{id}:
+ * /api/v1/employees/{id}:
  *   delete:
  *     summary: Delete Employee by ID
  *     tags:
@@ -202,7 +202,7 @@ router.delete(
 
 /**
  * @swagger
- * /api/employees:
+ * /api/v1/employees:
  *   delete:
  *     summary: Delete all Employees
  *     tags:

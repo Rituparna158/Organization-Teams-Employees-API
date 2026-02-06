@@ -1,6 +1,7 @@
 import { Router } from "express";
 import organizationController from "../controllers/organization";
 import { authenticate } from "../middlewares/auth";
+import { authorizePermissions } from "../middlewares/authorize-permissions";
 
 const router = Router();
 
@@ -15,7 +16,7 @@ router.use(authenticate);
 
 /**
  * @swagger
- * /api/organizations:
+ * /api/v1/organizations:
  *   get:
  *     summary: Get all organizations
  *     tags:
@@ -26,11 +27,15 @@ router.use(authenticate);
  *       200:
  *         description: List of organizations
  */
-router.get("/", organizationController.getAll);
+router.get(
+  "/",
+  authorizePermissions(["organization:read"]),
+  organizationController.getAll,
+);
 
 /**
  * @swagger
- * /api/organizations/{id}:
+ * /api/v1/organizations/{id}:
  *   get:
  *     summary: Get organization by ID
  *     tags:
@@ -49,11 +54,15 @@ router.get("/", organizationController.getAll);
  *       404:
  *         description: Organization not found
  */
-router.get("/:id", organizationController.getById);
+router.get(
+  "/:id",
+  authorizePermissions(["organization:read"]),
+  organizationController.getById,
+);
 
 /**
  * @swagger
- * /api/organizations:
+ * /api/v1/organizations:
  *   post:
  *     summary: Create a new organization
  *     tags:
@@ -80,11 +89,15 @@ router.get("/:id", organizationController.getById);
  *       201:
  *         description: Organization created
  */
-router.post("/", organizationController.create);
+router.post(
+  "/",
+  authorizePermissions(["organization:create"]),
+  organizationController.create,
+);
 
 /**
  * @swagger
- * /api/organizations/{id}:
+ * /api/v1/organizations/{id}:
  *   put:
  *     summary: Update organization by ID
  *     tags:
@@ -113,11 +126,15 @@ router.post("/", organizationController.create);
  *       200:
  *         description: Organization updated
  */
-router.put("/:id", organizationController.update);
+router.put(
+  "/:id",
+  authorizePermissions(["organization:update"]),
+  organizationController.update,
+);
 
 /**
  * @swagger
- * /api/organizations/{id}:
+ * /api/v1/organizations/{id}:
  *   delete:
  *     summary: Delete organization by ID
  *     tags:
@@ -134,11 +151,15 @@ router.put("/:id", organizationController.update);
  *       200:
  *         description: Organization deleted
  */
-router.delete("/:id", organizationController.deleteById);
+router.delete(
+  "/:id",
+  authorizePermissions(["organization:delete"]),
+  organizationController.deleteById,
+);
 
 /**
  * @swagger
- * /api/organizations:
+ * /api/v1/organizations:
  *   delete:
  *     summary: Delete all organizations
  *     tags:
@@ -149,6 +170,10 @@ router.delete("/:id", organizationController.deleteById);
  *       200:
  *         description: All organizations deleted
  */
-router.delete("/", organizationController.deleteAll);
+router.delete(
+  "/",
+  authorizePermissions(["organization:delete"]),
+  organizationController.deleteAll,
+);
 
 export default router;

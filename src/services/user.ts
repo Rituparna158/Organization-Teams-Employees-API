@@ -19,7 +19,7 @@ const userService = {
                     SELECT ?,id FROM roles WHERE name='user'
                     `,
           [userId],
-          (err2) => {
+          function (err2) {
             if (err2) return reject(err2);
           },
         );

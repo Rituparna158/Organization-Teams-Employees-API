@@ -28,7 +28,7 @@ const teamController = {
   },
   async getOrganizationId(req: Request, res: Response) {
     const orgId = Number(req.params.orgId);
-    const result = await teamService.getById(orgId);
+    const result = await teamService.getByOrganizationId(orgId);
     res.status(CONSTANTS.HTTP_STATUS.OK).json(result);
   },
   async update(req: Request, res: Response) {

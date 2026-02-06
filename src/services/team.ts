@@ -13,7 +13,7 @@ const teamService = {
           db.get(
             `SELECT * FROM teams WHERE id=?`,
             [this.lastID],
-            (err2, row) => {
+            function (err2, row) {
               if (err2) reject(err2);
               else resolve(row as Teams);
             },
@@ -50,11 +50,11 @@ const teamService = {
   getByOrganizationId(organizationId: number): Promise<Teams[]> {
     return new Promise((resolve, reject) => {
       const sql = "SELECT * FROM teams WHERE organizationId=?";
-      db.all(sql, [organizationId], (err, row) => {
+      db.all(sql, [organizationId], (err, rows) => {
         if (err) {
           reject(err);
         } else {
-          resolve(row as Teams[]);
+          resolve(rows as Teams[]);
         }
       });
     });

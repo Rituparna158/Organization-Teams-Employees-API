@@ -12,7 +12,7 @@ const router = Router();
 
 /**
  * @swagger
- * /auth/register:
+ * /auth/v1/register:
  *   post:
  *     summary: Register a new user
  *     tags: [Auth]
@@ -41,7 +41,7 @@ router.post("/register", authController.register);
 
 /**
  * @swagger
- * /auth/login:
+ * /auth/v1/login:
  *   post:
  *     summary: Login and get JWT token
  *     tags: [Auth]

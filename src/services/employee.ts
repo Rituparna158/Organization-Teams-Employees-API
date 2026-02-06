@@ -21,7 +21,7 @@ const employeeeService = {
             db.get(
               `SELECT * FROM employees WHERE id=?`,
               [this.lastID],
-              (e, row) => {
+              function (e, row) {
                 if (e) reject(e);
                 else resolve(row as Employee);
               },

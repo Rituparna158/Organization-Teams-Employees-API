@@ -16,7 +16,7 @@ router.use(authenticate);
 
 /**
  * @swagger
- * /users/me:
+ * /users/v1/me:
  *   get:
  *     summary: Get logged-in user profile
  *     tags:
@@ -31,7 +31,7 @@ router.get("/me", userController.me);
 
 /**
  * @swagger
- * /users/me:
+ * /users/v1/me:
  *   put:
  *     summary: Update logged-in user profile
  *     tags:
@@ -56,7 +56,7 @@ router.put("/me", userController.updateMe);
 
 /**
  * @swagger
- * /users/me/password:
+ * /users/v1/me/password:
  *   patch:
  *     summary: Update logged-in user password
  *     tags:
@@ -83,7 +83,7 @@ router.patch("/me/password", userController.updatePassword);
 
 /**
  * @swagger
- * /users/me:
+ * /users/v1/me:
  *   delete:
  *     summary: Soft delete logged-in user account
  *     tags:
@@ -98,7 +98,7 @@ router.delete("/me", userController.deleteMe);
 
 /**
  * @swagger
- * /users/{id}/roles:
+ * /users/v1/{id}/roles:
  *   post:
  *     summary: Assign role to a user (Admin only)
  *     tags:
