@@ -17,11 +17,11 @@ app.get("/", (req, res) => {
   res.send("API is running");
 });
 console.log("mounting auth routes");
-app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
+app.use("/auth/v1", authRoutes);
+app.use("/users/v1", userRoutes);
 
-app.use("/api/organizations", orgRoutes);
-app.use("/api/teams", teamRoutes);
-app.use("/api/employees", empRoutes);
-app.use("/api/teams", teamMemRoutes);
+app.use("/api/v1/organizations", orgRoutes);
+app.use("/api/v1/teams", teamRoutes);
+app.use("/api/v1/employees", empRoutes);
+app.use("/api/v1/teams", teamMemRoutes);
 export default app;
