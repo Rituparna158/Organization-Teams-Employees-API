@@ -5,10 +5,13 @@ import orgRoutes from "./routers/organizations.routers";
 import teamRoutes from "./routers/teams.routers";
 import empRoutes from "./routers/employee.router";
 import teamMemRoutes from "./routers/teamMember.router";
+import "./db/sqlite";
+import { setSwagger } from "./swagger";
 
 const app = express();
 console.log("app.ts loaded");
 app.use(express.json());
+setSwagger(app);
 
 app.get("/api", (req, res) => {
   res.send("API is running");

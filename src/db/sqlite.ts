@@ -1,7 +1,7 @@
 import sqlite3 from "sqlite3";
 import bcrypt from "bcryptjs";
 
-const db = new sqlite3.Database(":memory:");
+const db = new sqlite3.Database("./database.sqlite");
 
 db.serialize(() => {
   console.log("Initializing database...");
@@ -13,7 +13,7 @@ db.serialize(() => {
   // USERS TABLE
   db.run(
     `
-    CREATE TABLE users (
+    CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       email TEXT UNIQUE NOT NULL,
       passwordHash TEXT NOT NULL,
@@ -29,7 +29,7 @@ db.serialize(() => {
   // ORGANIZATIONS TABLE
   db.run(
     `
-    CREATE TABLE organizations (
+    CREATE TABLE IF NOT EXISTS organizations (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       location TEXT,
@@ -47,7 +47,7 @@ db.serialize(() => {
   // TEAMS TABLE
   db.run(
     `
-    CREATE TABLE teams (
+    CREATE TABLE IF NOT EXISTS teams (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       organizationId INTEGER NOT NULL,
@@ -65,7 +65,7 @@ db.serialize(() => {
   // EMPLOYEES TABLE
   db.run(
     `
-    CREATE TABLE employees (
+    CREATE TABLE IF NOT EXISTS employees (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       email TEXT UNIQUE NOT NULL,
@@ -88,7 +88,7 @@ db.serialize(() => {
   // TEAM MEMBERS TABLE (Many-to-Many)
   db.run(
     `
-    CREATE TABLE team_members (
+    CREATE TABLE IF NOT EXISTS team_members (
       teamId INTEGER NOT NULL,
       employeeId INTEGER NOT NULL,
       joinedAt TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -109,7 +109,7 @@ db.serialize(() => {
   // ROLES TABLE
   db.run(
     `
-    CREATE TABLE roles (
+    CREATE TABLE IF NOT EXISTS roles (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT UNIQUE NOT NULL
     )
@@ -122,7 +122,7 @@ db.serialize(() => {
   // PERMISSIONS TABLE
   db.run(
     `
-    CREATE TABLE permissions (
+    CREATE TABLE IF NOT EXISTS permissions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT UNIQUE NOT NULL
     )
@@ -135,7 +135,7 @@ db.serialize(() => {
   // USER_ROLES TABLE
   db.run(
     `
-    CREATE TABLE user_roles (
+    CREATE TABLE IF NOT EXISTS user_roles (
       userId INTEGER NOT NULL,
       roleId INTEGER NOT NULL,
       PRIMARY KEY (userId, roleId),
@@ -155,7 +155,7 @@ db.serialize(() => {
   // ROLE_PERMISSIONS TABLE
   db.run(
     `
-    CREATE TABLE role_permissions (
+    CREATE TABLE IF NOT EXISTS role_permissions (
       roleId INTEGER NOT NULL,
       permissionId INTEGER NOT NULL,
       PRIMARY KEY (roleId, permissionId),
@@ -173,14 +173,17 @@ db.serialize(() => {
     },
   );
   // SEED ROLES
-  db.run(`INSERT INTO roles (name) VALUES ('admin'), ('user')`, (err) => {
-    if (err) console.log("roles seed error:", err.message);
-    else console.log("roles seeded");
-  });
+  db.run(
+    `INSERT OR IGNORE INTO roles (name) VALUES ('admin'), ('user')`,
+    (err) => {
+      if (err) console.log("roles seed error:", err.message);
+      else console.log("roles seeded");
+    },
+  );
   // SEED PERMISSIONS
   db.run(
     `
-    INSERT INTO permissions (name) VALUES
+    INSERT OR IGNORE INTO permissions (name) VALUES
     ('organization:create'),
     ('organization:read'),
     ('organization:update'),
@@ -208,7 +211,7 @@ db.serialize(() => {
   // ADMIN ROLE - ALL PERMISSIONS
   db.run(
     `
-    INSERT INTO role_permissions (roleId, permissionId)
+    INSERT OR IGNORE INTO role_permissions (roleId, permissionId)
     SELECT r.id, p.id
     FROM roles r, permissions p
     WHERE r.name='admin'
@@ -222,7 +225,7 @@ db.serialize(() => {
   // USER ROLE - ONLY READ PERMISSIONS
   db.run(
     `
-    INSERT INTO role_permissions (roleId, permissionId)
+    INSERT OR IGNORE INTO role_permissions (roleId, permissionId)
     SELECT r.id, p.id
     FROM roles r
     JOIN permissions p
@@ -239,40 +242,33 @@ db.serialize(() => {
     },
   );
 
-  // DEFAULT ADMIN USER SEED
-  console.log("Creating default admin user...");
+  db.get(
+    `SELECT id FROM users WHERE email=?`,
+    ["admin@test.com"],
+    async (err, row) => {
+      if (row) {
+        console.log("Admin already exists");
+        return;
+      }
 
-  bcrypt.hash("admin123", 10).then((hash) => {
-    db.run(
-      `INSERT INTO users (email, passwordHash) VALUES (?, ?)`,
-      ["admin@test.com", hash],
-      function (err) {
-        if (err) {
-          console.log("admin insert error:", err.message);
-          return;
-        }
+      console.log("Creating default admin user...");
 
-        const adminId = this.lastID;
+      const hash = await bcrypt.hash("admin123", 10);
 
-        db.run(
-          `
-          INSERT INTO user_roles (userId, roleId)
-          SELECT ?, id FROM roles WHERE name='admin'
-          `,
-          [adminId],
-          (err2) => {
-            if (err2) console.log("admin role assign error:", err2.message);
-            else {
-              console.log("Default Admin Created!");
-              console.log("Email: admin@test.com");
-              console.log("Password: admin123");
-            }
-          },
-        );
-      },
-    );
-  });
+      db.run(
+        `INSERT INTO users (email, passwordHash) VALUES (?, ?)`,
+        ["admin@test.com", hash],
+        function (err2) {
+          if (err2) {
+            console.log("Admin insert error:", err2.message);
+            return;
+          }
 
+          console.log("Default admin created successfully");
+        },
+      );
+    },
+  );
   console.log("Database setup complete!");
 });
 export default db;
