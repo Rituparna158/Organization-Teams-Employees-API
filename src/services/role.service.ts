@@ -1,55 +1,33 @@
-import db from "../db/sqlite";
-interface RoleRow{
-    name:string;
+import pool from "../db/postgres";
+interface RoleRow {
+  name: string;
 }
 
-const roleService={
-    getRoleByUser(userId:number):Promise<string[]>{
-        return new Promise((resolve,reject)=>{
-            const sql=
-            `SELECT r.name FROM roles r
-            INNER JOIN user_roles ur ON ur.roleId = r.id
-            WHERE ur.userId=?`;
+const roleService = {
+  async getRoleByUser(userId: number): Promise<string[]> {
+    const sql = await pool.query(
+      `SELECT r.name FROM roles r
+            JOIN user_roles ur ON ur.roleId = r.id
+            WHERE ur.userId=$1`,
+      [userId],
+    );
+    return sql.rows.map((r) => r.name);
+  },
 
-            db.all(sql,[userId],(err,rows:RoleRow[])=>{
-                if(err) {
-                    reject(err);
-                    return;
-                }
-                const roles=rows.map(
-                    (row)=>row.name)
-                resolve(roles)
-            })
-        })
-    },
-
-    assignRoleToUser(userId:number,roleName:string):Promise<void>{
-        return new Promise((resolve,reject)=>{
-            const sql=`
+  async assignRoleToUser(userId: number, roleName: string): Promise<void> {
+    const sql = await pool.query(
+      `
             INSERT INTO user_roles (userId,roleId)
-            SELECT ?,id
+            SELECT $1,id
             FROM roles
-            WHERE name=?`;
-            db.run(sql,[userId,roleName],(err)=>{
-                if(err){
-                    return reject(err);
-                } 
-                resolve();
-
-            });
-        });
-    },
-    getAllRoles():Promise<string[]>{
-        return new Promise((resolve,reject)=>{
-            const sql=`
-            SELECT name FROM roles`;
-
-            db.all(sql,[],(err,rows:RoleRow[])=>{
-                if(err) return reject(err);
-                resolve(rows.map((r)=>r.name));
-            })
-        })
-    }
-    
-}
-export default roleService
+            WHERE name=$2
+            ON CONFLICT DO NOTHING`,
+      [userId, roleName],
+    );
+  },
+  async getAllRoles(): Promise<string[]> {
+    const sql = await pool.query(`SELECT name FROM roles`);
+    return sql.rows;
+  },
+};
+export default roleService;

@@ -1,17 +1,35 @@
+version: "3.9"
 services:
+
+  postgres:
+    image: postgres:15
+    container_name: hr-postgres
+    environment:
+      POSTGRES_DB: hrdb
+      POSTGRES_USER: hruser
+      POSTGRES_PASSWORD: hrpass
+    restart: always
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - ./src/b/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
   backend:
     build: .
-    container_name: hr-backend
+    container_name: hr-
+    restart: always
     ports:
       - "3000:3000"
-    volumes:
-      - ./database.sqlite:/app/database.sqlite
+    depends_on:
+      - postgres
     env_file:
       - .env
  
   nginx:
     image: nginx:latest
     container_name: hr-nginx
+    restart: always
     ports:
       - "80:80"
     volumes:
@@ -19,4 +37,3 @@ services:
       - ./frontend:/usr/share/nginx/html
     depends_on:
       - backend
- 

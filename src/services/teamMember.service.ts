@@ -1,39 +1,25 @@
-import db from "../db/sqlite";
+import pool from "../db/postgres";
 import { TeamMember } from "../models/teamMember.model";
 
-const TeamMemberService={
-    addMmber(
-        teamId:number,
-        employeeId:number
-    ):Promise<TeamMember>{
-        return new Promise((resolve,reject)=>{
-            const sql=`INSERT INTO team_members(teamId,employeeId) VALUES(?, ?)`;
-            db.run(sql,[teamId,employeeId],(err)=>{
-                if(err) reject(err);
-                else{
-                    db.get(
-                        `SELECT * FROM team_members WHERE teamId=? AND employeeId=?`,
-                        [teamId,employeeId],
-                        (err2,row)=>{
-                            if(err2) reject(err2);
-                            else resolve(row as TeamMember);
-                        }
-                    )
-                }
-            })
-        })
-    },
-    getMmbersByTeam(
-        teamId:number
-    ):Promise<TeamMember[]>{
-        return new Promise((resolve,reject)=>{
-            const sql=
-            `SELECT * FROM team_members WHERE teamId=?`;
-            db.all(sql,[teamId],(err,rows)=>{
-                if(err) reject(err);
-                else resolve(rows as TeamMember[]);
-            })
-        })
-    }
-}
+const TeamMemberService = {
+  async addMmber(teamId: number, employeeId: number): Promise<TeamMember> {
+    const sql = await pool.query(
+      `INSERT INTO team_members(teamId,employeeId)
+                 VALUES($1, $2)
+                 ON CONFLICT DO NOTHING 
+                 RETURNING  *`,
+      [teamId, employeeId],
+    );
+    return sql.rows[0];
+  },
+  async getMmbersByTeam(teamId: number): Promise<TeamMember[]> {
+    const sql = await pool.query(
+      `SELECT e.*  FROM employees e
+                JOIN team_members tm ON tm.employeeId=e.id
+                WHERE tm.teamId = $1`,
+      [teamId],
+    );
+    return sql.rows;
+  },
+};
 export default TeamMemberService;
